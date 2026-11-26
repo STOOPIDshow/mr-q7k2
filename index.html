@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0b0b0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Monthly review</title>
+<style>
+:root{--bg:#0b0b0f;--card:#16161d;--line:#2a2a35;--text:#ececf1;--dim:#9a9aa8;--acc:#4f8cff;--ok:#3ecf8e;--warn:#f5a524}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font:15px/1.35 -apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif}
+header{position:sticky;top:0;z-index:5;background:rgba(11,11,15,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line);padding:calc(env(safe-area-inset-top) + 8px) 10px 8px}
+h1{font-size:17px;margin:0 0 6px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}
+h1 small{color:var(--dim);font-weight:400;font-size:13px}
+#months{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+#months::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:var(--card);color:var(--text);border-radius:999px;padding:6px 10px;font-size:13px;white-space:nowrap}
+.chip.on{border-color:var(--acc);background:#1b2a4a}
+.chip .s{margin-left:4px;color:var(--ok)}
+.chip.dis{opacity:.45}
+#tools{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap;align-items:center}
+.seg{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.seg button{background:transparent;color:var(--dim);border:0;padding:6px 10px;font-size:13px}
+.seg button.on{background:var(--card);color:var(--text)}
+.btn{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-size:13px}
+#prog{height:3px;background:var(--line);margin-top:6px;border-radius:2px;overflow:hidden}
+#prog i{display:block;height:100%;background:var(--ok);width:0}
+main{padding:6px 6px 110px}
+.day{display:flex;justify-content:space-between;align-items:center;padding:12px 4px 6px;color:var(--dim);font-size:13px}
+.day button{background:none;border:0;color:var(--acc);font-size:13px;padding:2px 4px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+@media(min-width:600px){.grid{grid-template-columns:repeat(5,1fr)}}
+@media(min-width:1000px){.grid{grid-template-columns:repeat(7,1fr)}}
+.tile{position:relative;aspect-ratio:1;background:#1c1c24;border-radius:6px;overflow:hidden;border:2px solid transparent}
+.tile img{width:100%;height:100%;object-fit:cover;display:block;opacity:.55;transition:opacity .12s}
+.tile.sel{border-color:var(--acc)}
+.tile.sel img{opacity:1}
+.tile .ck{position:absolute;right:5px;top:5px;width:22px;height:22px;border-radius:50%;border:2px solid #fff;background:rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700}
+.tile.sel .ck{background:var(--acc);border-color:var(--acc)}
+.tile.sel .ck::after{content:"✓";color:#fff}
+.tile .zm{position:absolute;left:0;bottom:0;padding:10px 8px 4px 6px;font-size:16px;color:#fff;text-shadow:0 0 4px #000}
+.tile .vd{position:absolute;right:5px;bottom:4px;font-size:11px;background:rgba(0,0,0,.6);border-radius:4px;padding:1px 4px}
+.tile .ai{position:absolute;left:5px;top:5px;font-size:10px;background:rgba(0,0,0,.6);border-radius:4px;padding:1px 4px;color:#cfd8ff}
+.noimg{display:flex;align-items:center;justify-content:center;height:100%;color:var(--dim);font-size:11px;text-align:center;padding:4px}
+footer{position:fixed;left:0;right:0;bottom:0;z-index:6;background:rgba(11,11,15,.96);border-top:1px solid var(--line);padding:10px 12px calc(env(safe-area-inset-bottom) + 10px);display:flex;gap:10px;align-items:center}
+footer .cnt{flex:1;font-size:14px}
+footer .cnt b{font-size:17px}
+#done{background:var(--ok);color:#05140d;border:0;border-radius:12px;padding:12px 22px;font-size:16px;font-weight:700}
+#done:disabled{opacity:.5}
+#lb{position:fixed;inset:0;z-index:10;background:rgba(0,0,0,.94);display:none;flex-direction:column;align-items:center;justify-content:center;padding:20px}
+#lb img{max-width:100%;max-height:68vh;border-radius:8px}
+#lb .meta{color:var(--dim);font-size:13px;margin:10px 0;text-align:center;max-width:600px}
+#lb .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+#lb a,#lb button{background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:15px;text-decoration:none}
+#lb .tg.sel{background:var(--acc);border-color:var(--acc)}
+#gate{max-width:360px;margin:20vh auto;padding:20px;text-align:center}
+#gate input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--text);font-size:16px;margin:10px 0}
+#toast{position:fixed;left:50%;bottom:90px;transform:translateX(-50%);background:#1f2f24;border:1px solid var(--ok);color:var(--text);padding:10px 14px;border-radius:10px;z-index:12;display:none;max-width:90vw;text-align:center}
+.msg{color:var(--dim);text-align:center;padding:40px 10px}
+</style></head><body>
+<div id="gate" style="display:none">
+  <h2>Monthly review</h2>
+  <div style="color:var(--dim)">Enter the page password</div>
+  <input id="pw" type="password" autocomplete="current-password" placeholder="Password">
+  <button class="btn" id="go" style="width:100%;padding:12px;font-size:16px">Open</button>
+  <div id="gerr" style="color:#ff7a7a;margin-top:8px"></div>
+</div>
+<div id="app" style="display:none">
+<header>
+  <h1><span id="title">Izzy, month by month</span><small id="sub"></small></h1>
+  <div id="months"></div>
+  <div id="tools">
+    <div class="seg" id="filt"><button data-f="all" class="on">All</button><button data-f="sel">Izzy</button><button data-f="un">Not Izzy</button></div>
+    <button class="btn" id="allBtn">All on</button><button class="btn" id="noneBtn">All off</button><button class="btn" id="resetBtn">Reset to my guesses</button>
+  </div>
+  <div id="prog"><i></i></div>
+</header>
+<main id="main"><div class="msg">Loading…</div></main>
+<footer><div class="cnt"><b id="nsel">0</b> picked as Izzy <span id="ntot" style="color:var(--dim)"></span><div id="state" style="color:var(--dim);font-size:12px"></div></div><button id="done">Done</button></footer>
+</div>
+<div id="lb"><img id="lbimg" alt=""><div class="meta" id="lbmeta"></div><div class="row"><button class="tg" id="lbtg">Izzy</button><a id="lbdrive" target="_blank" rel="noopener noreferrer">Open original</a><button id="lbprev">‹</button><button id="lbnext">›</button><button id="lbx">Close</button></div></div>
+<div id="toast"></div>
+<script>
+const API="https://knxhutwwxoipzhcmjube.supabase.co/functions/v1/review";
+const MN=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+const FIRST="2023-08";
+let KEY=null, months=[], cur=null, items=[], sel=new Set(), filt="all", lbIdx=-1, view=[];
+const $=s=>document.querySelector(s);
+function mlabel(m){const [y,mo]=m.split("-").map(Number);return MN[mo-1]+" "+y}
+function ageIdx(m){const [y,mo]=m.split("-").map(Number);return (y-2023)*12+(mo-8)}
+async function api(body){const r=await fetch(API,{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({...body,key:KEY})});const d=await r.json().catch(()=>({error:"bad response"}));if(!r.ok)throw new Error(d.error||("HTTP "+r.status));return d}
+function toast(t,ms=3500){const e=$("#toast");e.textContent=t;e.style.display="block";clearTimeout(e._t);e._t=setTimeout(()=>e.style.display="none",ms)}
+async function start(){
+  const h=new URLSearchParams(location.hash.slice(1));
+  if(h.get("k")){localStorage.setItem("rv_k",h.get("k"));history.replaceState(null,"",location.pathname+location.search)}
+  KEY=localStorage.getItem("rv_k");
+  if(!KEY)return showGate();
+  try{await api({action:"ping"})}catch(e){localStorage.removeItem("rv_k");return showGate(e.message)}
+  $("#gate").style.display="none";$("#app").style.display="block";
+  await loadMonths();
+  const want=h.get("m")||localStorage.getItem("rv_last")||firstOpen();
+  openMonth(months.find(x=>x.month===want)?want:firstOpen());
+}
+function firstOpen(){const m=months.find(x=>!x.saved&&x.ready);return m?m.month:(months[0]?months[0].month:FIRST)}
+function showGate(err){$("#app").style.display="none";$("#gate").style.display="block";$("#gerr").textContent=err&&err!=="wrong password"?err:(err?"That password didn't work.":"");$("#pw").focus()}
+$("#go").onclick=async()=>{KEY=$("#pw").value.trim();localStorage.setItem("rv_k",KEY);start()};
+$("#pw").addEventListener("keydown",e=>{if(e.key==="Enter")$("#go").click()});
+async function loadMonths(){
+  const d=await api({action:"months"});months=d.months;
+  const done=months.filter(m=>m.saved).length;
+  $("#sub").textContent=done+" of "+months.length+" months done";
+  $("#prog i").style.width=(months.length?done/months.length*100:0)+"%";
+  const box=$("#months");box.innerHTML="";
+  for(const m of months){const b=document.createElement("button");b.className="chip"+(m.month===cur?" on":"")+(m.ready?"":" dis");
+    b.innerHTML="Mo "+String(ageIdx(m.month)).padStart(2,"0")+" · "+mlabel(m.month)+(m.saved?'<span class="s">✓</span>':"");
+    b.onclick=()=>{if(!m.ready){toast("That month's thumbnails are still being made.");return}openMonth(m.month)};box.appendChild(b)}
+}
+function draftKey(m){return "rv_draft_"+m}
+async function openMonth(m){
+  if(cur&&cur!==m)saveDraft();
+  cur=m;localStorage.setItem("rv_last",m);
+  [...$("#months").children].forEach((c,i)=>c.classList.toggle("on",months[i]&&months[i].month===m));
+  const on=$("#months").querySelector(".on");if(on)on.scrollIntoView({inline:"center",block:"nearest"});
+  $("#main").innerHTML='<div class="msg">Loading '+mlabel(m)+"…</div>";
+  const d=await api({action:"month",month:m});items=d.items;
+  const dr=localStorage.getItem(draftKey(m));
+  if(dr){sel=new Set(JSON.parse(dr));setState("Unsaved changes on this phone")}
+  else if(d.saved){sel=new Set(d.saved.picks);setState("Saved "+new Date(d.saved.saved_at).toLocaleString()+(d.saved.applied_at?" · added to Drive":" · waiting to be added to Drive"))}
+  else{sel=new Set(items.filter(x=>x.pre).map(x=>x.t));setState("Checked = my guess. Tap to fix.")}
+  $("#title").textContent="Month "+String(ageIdx(m)).padStart(2,"0")+" · "+mlabel(m);
+  render();
+}
+function setState(t){$("#state").textContent=t}
+function saveDraft(){if(cur)localStorage.setItem(draftKey(cur),JSON.stringify([...sel]))}
+function dayLabel(d){const dt=new Date(d.slice(0,10)+"T12:00:00");return dt.toLocaleDateString(undefined,{weekday:"short",month:"short",day:"numeric"})}
+function fmtDur(s){if(s==null)return"";s=Math.round(s);return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function render(){
+  view=items.filter(x=>filt==="all"||(filt==="sel"?sel.has(x.t):!sel.has(x.t)));
+  const main=$("#main");main.innerHTML="";
+  if(!view.length){main.innerHTML='<div class="msg">Nothing here with this filter.</div>';count();return}
+  let day=null,grid=null;
+  view.forEach((x,i)=>{
+    const dk=x.d.slice(0,10);
+    if(dk!==day){day=dk;const h=document.createElement("div");h.className="day";const dayItems=view.filter(y=>y.d.slice(0,10)===dk);
+      h.innerHTML="<span>"+dayLabel(x.d)+" · "+dayItems.length+"</span>";const b=document.createElement("button");
+      b.textContent="toggle day";b.onclick=()=>{const all=dayItems.every(y=>sel.has(y.t));dayItems.forEach(y=>all?sel.delete(y.t):sel.add(y.t));saveDraft();setState("Unsaved changes on this phone");render()};
+      h.appendChild(b);main.appendChild(h);grid=document.createElement("div");grid.className="grid";main.appendChild(grid)}
+    const t=document.createElement("div");t.className="tile"+(sel.has(x.t)?" sel":"");t.dataset.t=x.t;
+    t.innerHTML=(x.u?'<img loading="lazy" decoding="async" alt="" src="'+x.u+'">':'<div class="noimg">no preview<br>(tap 🔍)</div>')+'<div class="ck"></div>'+(x.k==="v"?'<div class="vd">▶ '+fmtDur(x.du)+"</div>":"")+(x.pre?'<div class="ai">guess</div>':"")+'<div class="zm">🔍</div>';
+    t.onclick=e=>{if(e.target.classList.contains("zm")){openLb(i);return}toggle(x.t,t)};
+    grid.appendChild(t)});
+  count();
+}
+function toggle(tk,el){sel.has(tk)?sel.delete(tk):sel.add(tk);if(el)el.classList.toggle("sel",sel.has(tk));saveDraft();setState("Unsaved changes on this phone");count();if(lbIdx>=0)lbSync()}
+function count(){$("#nsel").textContent=items.filter(x=>sel.has(x.t)).length;$("#ntot").textContent="of "+items.length}
+function openLb(i){lbIdx=i;$("#lb").style.display="flex";lbSync()}
+function lbSync(){const x=view[lbIdx];if(!x)return;$("#lbimg").src=x.u||"";$("#lbmeta").textContent=dayLabel(x.d)+" "+x.d.slice(11,16)+(x.k==="v"?" · video "+fmtDur(x.du):" · photo")+(x.ds?" · "+x.ds:"");
+  $("#lbdrive").href="https://drive.google.com/file/d/"+x.f+"/view";$("#lbdrive").textContent=x.k==="v"?"Play video":"Open original";
+  const s=sel.has(x.t);$("#lbtg").classList.toggle("sel",s);$("#lbtg").textContent=s?"✓ Izzy":"Not Izzy"}
+$("#lbtg").onclick=()=>{const x=view[lbIdx];const el=document.querySelector('.tile[data-t="'+x.t+'"]');toggle(x.t,el)};
+$("#lbx").onclick=()=>{$("#lb").style.display="none";lbIdx=-1};
+$("#lbprev").onclick=()=>{if(lbIdx>0){lbIdx--;lbSync()}};$("#lbnext").onclick=()=>{if(lbIdx<view.length-1){lbIdx++;lbSync()}};
+$("#filt").onclick=e=>{const f=e.target.dataset.f;if(!f)return;filt=f;[...$("#filt").children].forEach(b=>b.classList.toggle("on",b.dataset.f===f));render()};
+$("#allBtn").onclick=()=>{if(!confirm("Mark every item this month as Izzy?"))return;items.forEach(x=>sel.add(x.t));saveDraft();setState("Unsaved changes on this phone");render()};
+$("#noneBtn").onclick=()=>{if(!confirm("Uncheck everything this month?"))return;sel.clear();saveDraft();setState("Unsaved changes on this phone");render()};
+$("#resetBtn").onclick=()=>{if(!confirm("Go back to my original guesses for this month?"))return;sel=new Set(items.filter(x=>x.pre).map(x=>x.t));localStorage.removeItem(draftKey(cur));setState("Checked = my guess. Tap to fix.");render()};
+$("#done").onclick=async()=>{const b=$("#done");b.disabled=true;b.textContent="Saving…";
+  try{const picks=items.filter(x=>sel.has(x.t)).map(x=>x.t);const d=await api({action:"save",month:cur,picks});
+    localStorage.removeItem(draftKey(cur));setState("Saved "+new Date(d.saved_at).toLocaleString()+" · waiting to be added to Drive");
+    toast("Saved "+d.n+" for "+mlabel(cur)+". I'll add them to Month "+String(ageIdx(cur)).padStart(2,"0")+".");
+    await loadMonths();const nx=months.find(m=>m.month>cur&&m.ready&&!m.saved);if(nx&&confirm("Saved! Load "+mlabel(nx.month)+" next?"))openMonth(nx.month)}
+  catch(e){toast("Didn't save: "+e.message+". Your picks are kept on this phone; try again.",6000)}
+  finally{b.disabled=false;b.textContent="Done"}};
+start();
+</script></body></html>
